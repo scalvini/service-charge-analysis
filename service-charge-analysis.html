@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Service charge analysis — London Square Bermondsey</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:#fafaf8;color:#111;-webkit-font-smoothing:antialiased;font-size:15px;line-height:1.7}
+
+.page{max-width:640px;margin:0 auto;padding:0 1.5rem}
+
+.head{padding:3rem 0 2rem}
+.head-label{font-size:10px;text-transform:uppercase;letter-spacing:0.14em;color:#9ca3af;font-weight:500;margin-bottom:1.5rem}
+.head h1{font-size:30px;font-weight:700;line-height:1.1;letter-spacing:-0.035em;margin-bottom:10px;color:#111}
+.head-sub{font-size:15px;color:#6b7280;line-height:1.6;max-width:520px}
+.head-rule{height:1px;background:#d1d5db;margin-top:2rem}
+
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);padding:1.5rem 0;border-bottom:1px solid #e5e7eb}
+.k{text-align:center}
+.k-val{font-size:28px;font-weight:700;letter-spacing:-0.03em;line-height:1;color:#111}
+.k-val.hi{color:#92400e}
+.k-tag{font-size:9px;text-transform:uppercase;letter-spacing:0.12em;color:#9ca3af;font-weight:500;margin-top:6px}
+
+h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#9ca3af;margin:3rem 0 0.6rem}
+h2:first-of-type{margin-top:2rem}
+p{color:#4b5563;margin-bottom:0.8rem}
+p.intro{font-size:17px;color:#111;line-height:1.55;margin-bottom:1.2rem;font-weight:400}
+
+.layers{margin:1.5rem 0 2rem}
+.l-row{display:flex;align-items:center;padding:14px 0;border-bottom:1px solid #e5e7eb}
+.l-row:first-child{border-top:1px solid #e5e7eb}
+.l-dot{width:8px;height:8px;border-radius:50%;margin-right:14px;flex-shrink:0}
+.l-body{flex:1;min-width:0}
+.l-name{font-size:14px;font-weight:600;color:#111}
+.l-desc{font-size:12px;color:#9ca3af;margin-top:1px}
+.l-amt{font-size:18px;font-weight:700;letter-spacing:-0.02em;color:#111;margin-left:16px;white-space:nowrap}
+.l-total{display:flex;align-items:center;padding:16px 18px;background:#3f4f5f;color:#fff;margin-top:-1px}
+.l-total .l-name{color:#fff}
+.l-total .l-desc{color:#94a3b8}
+.l-total .l-amt{color:#fff}
+
+.dups{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;margin:1.5rem 0 2rem}
+.d{padding:20px 10px;text-align:center;border-right:1px solid #e5e7eb}
+.d:last-child{border-right:none}
+.d-n{font-size:32px;font-weight:700;letter-spacing:-0.03em;line-height:1;color:#92400e}
+.d-label{font-size:9px;text-transform:uppercase;letter-spacing:0.08em;color:#9ca3af;font-weight:500;margin:8px 0 4px}
+.d-val{font-size:14px;font-weight:600;color:#374151}
+
+.cmp{display:grid;grid-template-columns:1fr 28px 1fr;align-items:stretch;margin:1.5rem 0}
+.cmp-box{border:1px solid #e5e7eb;padding:24px 16px;text-align:center;background:#fff}
+.cmp-box.alert{border-color:#92400e;background:#fffbeb}
+.cmp-tag{font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:#9ca3af;font-weight:500;margin-bottom:8px}
+.cmp-val{font-size:28px;font-weight:700;letter-spacing:-0.03em;color:#111}
+.cmp-box.alert .cmp-val{color:#92400e}
+.cmp-note{font-size:12px;color:#9ca3af;margin-top:8px;line-height:1.45}
+.cmp-mid{display:flex;align-items:center;justify-content:center;font-size:16px;color:#d1d5db}
+
+.callout{border-left:2px solid #92400e;padding:1rem 0 1rem 1.2rem;margin:1.5rem 0;font-size:14px;line-height:1.65;color:#78350f}
+.callout strong{font-weight:600}
+
+.tbl{width:100%;border-collapse:collapse;font-size:13px;margin:1.5rem 0}
+.tbl th{text-align:left;padding:8px 6px;font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:#9ca3af;font-weight:600;border-bottom:1px solid #9ca3af}
+.tbl th.r{text-align:right}
+.tbl td{padding:5px 6px;border-bottom:1px solid #f3f4f6;color:#4b5563}
+.tbl td.r{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;color:#111}
+.tbl td.mute{color:#9ca3af}
+.tbl tr.hi td{background:#fffbeb;color:#92400e;font-weight:600}
+.tbl tr.sum td{border-top:1px solid #9ca3af;border-bottom:none;font-weight:700;font-size:15px;color:#111;padding:12px 6px}
+
+.donut-row{display:grid;grid-template-columns:160px 1fr;gap:32px;align-items:center;margin:2rem 0}
+.donut-wrap{position:relative;height:160px}
+.donut-labels{display:flex;flex-direction:column;gap:20px}
+.dl{display:flex;gap:12px;align-items:flex-start}
+.dl-dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0}
+.dl-txt strong{display:block;font-size:18px;font-weight:700;letter-spacing:-0.02em;line-height:1.2}
+.dl-txt span{font-size:12px;color:#9ca3af;line-height:1.4}
+
+.chart-block{margin:2rem 0;padding-top:1.5rem;border-top:1px solid #e5e7eb}
+.chart-h{font-size:15px;font-weight:600;color:#111;margin-bottom:2px;letter-spacing:-0.01em}
+.chart-sub{font-size:12px;color:#9ca3af;margin-bottom:1.2rem}
+.chart-area{position:relative;width:100%;height:240px}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:11px;color:#9ca3af;margin-top:10px}
+.legend span{display:flex;align-items:center;gap:5px}
+.legend i{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.legend i.line{border-radius:0;width:14px;height:0;border-top:1.5px dashed #9ca3af}
+
+.qs{margin:1.5rem 0 2rem}
+.qi{padding:1.2rem 0;border-bottom:1px solid #e5e7eb}
+.qi:first-child{border-top:1px solid #e5e7eb}
+.qi strong{display:block;font-size:15px;font-weight:600;color:#111;margin-bottom:4px}
+.qi p{margin:0;font-size:13px;color:#6b7280;line-height:1.6}
+
+.div{height:1px;background:#e5e7eb;margin:3rem 0}
+
+.foot{padding:2rem 0 4rem;font-size:11px;color:#9ca3af;line-height:1.7;border-top:1px solid #d1d5db}
+.foot p{color:#9ca3af;margin-bottom:0.3rem}
+
+@media(max-width:520px){
+.kpis{grid-template-columns:repeat(2,1fr)}.k{padding:12px 0;border-bottom:1px solid #e5e7eb}.k:nth-child(odd){border-right:1px solid #e5e7eb}
+.dups{grid-template-columns:repeat(2,1fr)}.d:nth-child(odd){border-right:1px solid #e5e7eb}.d:nth-child(1),.d:nth-child(2){border-bottom:1px solid #e5e7eb}
+.cmp{grid-template-columns:1fr;gap:0}.cmp-mid{padding:6px 0}
+.donut-row{grid-template-columns:1fr}
+.head h1{font-size:24px}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="head">
+<div class="head-label">London Square Bermondsey &middot; The Tannery &middot; Affordable leaseholders</div>
+<h1>One flat. Four management fees.<br>Nearly £1,000 a year in overhead.</h1>
+<p class="head-sub">13.4% of the service charge never reaches the building. It goes to management, audit, legal and admin fees — many of them duplicated across multiple schedule layers.</p>
+<div class="head-rule"></div>
+</div>
+
+<div class="kpis">
+<div class="k"><div class="k-val">4</div><div class="k-tag">Fee lines</div></div>
+<div class="k"><div class="k-val hi">£937</div><div class="k-tag">Overhead / year</div></div>
+<div class="k"><div class="k-val">£78</div><div class="k-tag">Per month</div></div>
+<div class="k"><div class="k-val hi">13.4%</div><div class="k-tag">Of total bill</div></div>
+</div>
+
+<h2>The four management fees</h2>
+<p class="intro">Every affordable leaseholder in the Tannery pays into three Rendall & Rittner management fees and one Peabody fee. These are Flat 17's charges for 2025.</p>
+
+<div class="layers">
+<div class="l-row"><div class="l-dot" style="background:#64748b"></div><div class="l-body"><div class="l-name">R&R estate management fee</div><div class="l-desc">Shared across the entire development</div></div><div class="l-amt">£130.94</div></div>
+<div class="l-row"><div class="l-dot" style="background:#6d8a7f"></div><div class="l-body"><div class="l-name">R&R building management fee</div><div class="l-desc">Shared across all Tannery units</div></div><div class="l-amt">£73.62</div></div>
+<div class="l-row"><div class="l-dot" style="background:#7c6f93"></div><div class="l-body"><div class="l-name">R&R affordable internal management fee</div><div class="l-desc">Charged to affordable units only</div></div><div class="l-amt">£263.01</div></div>
+<div class="l-row"><div class="l-dot" style="background:#a1805b"></div><div class="l-body"><div class="l-name">Peabody management / admin fee</div><div class="l-desc">Fourth layer, on top of R&R</div></div><div class="l-amt">£160.00</div></div>
+<div class="l-total"><div class="l-body"><div class="l-name">Total management fees</div><div class="l-desc">Four fees. One building. One flat.</div></div><div class="l-amt">£627.57</div></div>
+</div>
+
+<h2>The duplication pattern</h2>
+<p>Audit fees, health and safety inspections and legal fees are each charged separately at every schedule level for the same building. Flat 17's annual cost for each:</p>
+
+<div class="dups">
+<div class="d"><div class="d-n">4&times;</div><div class="d-label">Management</div><div class="d-val">£628</div></div>
+<div class="d"><div class="d-n">3&times;</div><div class="d-label">H&S inspection</div><div class="d-val">£112</div></div>
+<div class="d"><div class="d-n">3&times;</div><div class="d-label">Audit</div><div class="d-val">£33</div></div>
+<div class="d"><div class="d-n">2&times;</div><div class="d-label">Legal</div><div class="d-val">£42</div></div>
+</div>
+
+<p>One auditor visits one building. One H&S consultant inspects one site. The three-layer schedule structure means each produces multiple fee lines. H&S alone costs Flat 17 £112 across three layers: £3.80 estate, £10.34 building, £98.12 affordable.</p>
+
+<h2>Fee on a fee</h2>
+<p>The 2025 budget contains two charges for apartment door inspections: the inspection and a separate admin fee for R&R to arrange it.</p>
+
+<div class="cmp">
+<div class="cmp-box"><div class="cmp-tag">Inspection</div><div class="cmp-val">£22.26</div><div class="cmp-note">The actual work</div></div>
+<div class="cmp-mid">+</div>
+<div class="cmp-box alert"><div class="cmp-tag">Arrangement fee</div><div class="cmp-val">£16.19</div><div class="cmp-note">R&R's charge to coordinate</div></div>
+</div>
+
+<div class="callout"><strong>The arrangement fee is 73% of the inspection cost.</strong> Coordinating contractors is core management work. R&R is already paid £628 a year in management fees from Flat 17 alone. A separate charge to arrange one inspection is a fee on top of a fee.</div>
+
+<div class="div"></div>
+
+<h2>Full breakdown — Flat 17, 2025</h2>
+<p>Every management, admin and professional fee charged across all schedule layers plus Peabody.</p>
+
+<table class="tbl">
+<thead><tr><th>Fee</th><th>Schedule</th><th>Duplicated</th><th class="r">£ / year</th></tr></thead>
+<tbody>
+<tr><td>Management fee</td><td>Estate</td><td>4&times;</td><td class="r">130.94</td></tr>
+<tr><td>Management fee</td><td>Building</td><td>4&times;</td><td class="r">73.62</td></tr>
+<tr><td>Management fee</td><td>Affordable</td><td>4&times;</td><td class="r">263.01</td></tr>
+<tr><td>Management fee</td><td>Peabody</td><td>4&times;</td><td class="r">160.00</td></tr>
+<tr><td>Audit fee</td><td>Estate</td><td>3&times;</td><td class="r">3.04</td></tr>
+<tr><td>Audit fee</td><td>Building</td><td>3&times;</td><td class="r">7.27</td></tr>
+<tr><td>Audit fee</td><td>Affordable</td><td>3&times;</td><td class="r">22.87</td></tr>
+<tr><td>H&S inspections</td><td>Estate</td><td>3&times;</td><td class="r">3.80</td></tr>
+<tr><td>H&S inspections</td><td>Building</td><td>3&times;</td><td class="r">10.34</td></tr>
+<tr><td>H&S inspections</td><td>Affordable</td><td>3&times;</td><td class="r">98.12</td></tr>
+<tr><td>Legal &amp; professional</td><td>Building</td><td>2&times;</td><td class="r">10.99</td></tr>
+<tr><td>Legal &amp; professional</td><td>Affordable</td><td>2&times;</td><td class="r">30.66</td></tr>
+<tr><td>Company secretarial</td><td>Estate</td><td class="mute"></td><td class="r">3.32</td></tr>
+<tr><td>M&E consultation</td><td>Estate</td><td class="mute"></td><td class="r">6.91</td></tr>
+<tr><td>BSA fee</td><td>Affordable</td><td class="mute"></td><td class="r">73.59</td></tr>
+<tr class="hi"><td>Door inspection</td><td>Affordable</td><td>fee on fee</td><td class="r">22.26</td></tr>
+<tr class="hi"><td>Door inspection arrangement</td><td>Affordable</td><td>fee on fee</td><td class="r">16.19</td></tr>
+<tr class="sum"><td colspan="3">Total admin &amp; overhead</td><td class="r">£936.93</td></tr>
+</tbody>
+</table>
+
+<p>Of Flat 17's total £6,974 service charge, nearly one pound in seven goes to overhead.</p>
+
+<div class="donut-row">
+<div class="donut-wrap"><canvas id="donut"></canvas></div>
+<div class="donut-labels">
+<div class="dl"><div class="dl-dot" style="background:#8da4a0"></div><div class="dl-txt"><strong>£6,037</strong><span>Services — cleaning, repairs, utilities, insurance, reserves</span></div></div>
+<div class="dl"><div class="dl-dot" style="background:#92400e"></div><div class="dl-txt"><strong>£937</strong><span>Management, audit, legal and admin — 13.4%</span></div></div>
+</div>
+</div>
+
+<div class="div"></div>
+
+<h2>Trend</h2>
+<p>Admin costs have risen from £792 to £937 over two years. The proportion of the total bill going to overhead has increased from 11.8% to 13.4%.</p>
+
+<div class="chart-block">
+<div class="chart-h">Flat 17 — overhead fees by year</div>
+<div class="chart-sub">Management + audit + H&S + legal + admin add-ons</div>
+<div class="chart-area"><canvas id="trend"></canvas></div>
+<div class="legend">
+<span><i style="background:#7b8fa2"></i>Management (&times;4)</span>
+<span><i style="background:#b8c0ca"></i>Professional fees</span>
+<span><i style="background:#92400e"></i>Admin add-ons</span>
+</div>
+</div>
+
+<div class="chart-block">
+<div class="chart-h">Total management fee pots — all affordable units</div>
+<div class="chart-sub">Combined budget flowing to R&R and Peabody vs CPI-linked baseline</div>
+<div class="chart-area"><canvas id="pots"></canvas></div>
+<div class="legend">
+<span><i style="background:#64748b"></i>R&R estate</span>
+<span><i style="background:#6d8a7f"></i>R&R building</span>
+<span><i style="background:#7c6f93"></i>R&R affordable</span>
+<span><i style="background:#a1805b"></i>Peabody</span>
+<span><i style="background:#92400e"></i>Admin add-ons</span>
+<span><i class="line"></i>CPI baseline</span>
+</div>
+</div>
+
+<p>Total management fees across the development have risen 35% since 2022 — nearly double the 18% CPI increase. Including new admin charges, the effective increase is 43%.</p>
+
+<div class="div"></div>
+
+<h2>Questions for the managing agent</h2>
+
+<div class="qs">
+<div class="qi"><strong>What does each management fee layer pay for that the others do not?</strong><p>R&R charges £49,243 at estate level and £5,693 at building level. Why is there a further £4,289 on the affordable schedule? What does Peabody's £3,520 deliver on top?</p></div>
+<div class="qi"><strong>Why are audit and H&S fees charged three times?</strong><p>One auditor visits one building. One H&S consultant inspects one site. Why three fee lines? H&S alone costs Flat 17 £112 across the layers.</p></div>
+<div class="qi"><strong>Why is there a separate arrangement fee for door inspections?</strong><p>Coordinating contractors is core management work. R&R already receives £628 a year from Flat 17. A separate £16.19 charge is paying for the same task twice.</p></div>
+<div class="qi"><strong>Why are fees rising faster than inflation?</strong><p>Total management fees have risen 35% since 2022 against 18% CPI. With admin add-ons, the effective increase is 43%.</p></div>
+</div>
+
+</div>
+
+<div class="page">
+<div class="foot">
+<p>Source: R&R service charge budgets (2024, 2025), R&R Section 20b unaudited accounts (2022, 2023), Flat 17 budget breakdowns (2023–2025), Peabody budget 2023–24. All figures from published documents.</p>
+<p>Prepared by a leaseholder. Not legal or financial advice. London Square Bermondsey, The Tannery (Plot 1), Crimscott Street, London SE1.</p>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+Chart.defaults.font.family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif";
+Chart.defaults.font.size=11;
+Chart.defaults.color='#9ca3af';
+
+new Chart(document.getElementById('donut'),{
+type:'doughnut',
+data:{labels:['Services','Overhead'],datasets:[{data:[6037,937],backgroundColor:['#8da4a0','#92400e'],borderWidth:0}]},
+options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.label+': £'+c.raw.toLocaleString()}}}}}
+});
+
+new Chart(document.getElementById('trend'),{
+type:'bar',
+data:{labels:['2023','2024','2025'],datasets:[
+{label:'Management',data:[594,617,628],backgroundColor:'#7b8fa2'},
+{label:'Professional',data:[169,223,164],backgroundColor:'#b8c0ca'},
+{label:'Admin',data:[0,122,106],backgroundColor:'#92400e'}
+]},
+options:{responsive:true,maintainAspectRatio:false,
+plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.dataset.label+': £'+c.raw}}}},
+scales:{
+x:{stacked:true,grid:{display:false},border:{display:false},ticks:{color:'#9ca3af',font:{size:11,weight:'500'}}},
+y:{stacked:true,beginAtZero:true,grid:{color:'#f3f4f6',drawTicks:false},border:{display:false},ticks:{callback:function(v){return '£'+v},padding:8,color:'#9ca3af'}}
+}}
+});
+
+new Chart(document.getElementById('pots'),{
+type:'bar',
+data:{labels:['2023','2024','2025'],datasets:[
+{label:'R&R estate',data:[44376,47349,49243],backgroundColor:'#64748b'},
+{label:'R&R building',data:[5131,5474,5693],backgroundColor:'#6d8a7f'},
+{label:'R&R affordable',data:[3866,4125,4289],backgroundColor:'#7c6f93'},
+{label:'Peabody',data:[3520,3520,3520],backgroundColor:'#a1805b'},
+{label:'Admin',data:[0,1992,1464],backgroundColor:'#92400e'},
+{label:'CPI',data:[56893,60200,62400],type:'line',borderColor:'#d1d5db',borderDash:[5,3],pointRadius:0,borderWidth:1.5,fill:false,order:0}
+]},
+options:{responsive:true,maintainAspectRatio:false,
+plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.dataset.label+': £'+c.raw.toLocaleString()}}}},
+scales:{
+x:{stacked:true,grid:{display:false},border:{display:false},ticks:{color:'#9ca3af',font:{size:11,weight:'500'}}},
+y:{stacked:true,beginAtZero:true,grid:{color:'#f3f4f6',drawTicks:false},border:{display:false},ticks:{callback:function(v){return '£'+Math.round(v/1000)+'k'},padding:8,color:'#9ca3af'}}
+}}
+});
+</script>
+</body>
+</html>
